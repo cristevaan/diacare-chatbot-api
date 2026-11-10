@@ -1,5 +1,4 @@
-from rag.testing import testing, testing2
+from rag.testing import testing
 
 if __name__ == "__main__":
   testing()
-  testing2()
