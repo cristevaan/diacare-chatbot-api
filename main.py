@@ -1,4 +1,29 @@
-from rag.testing import testing
+from datetime import datetime
+
+from rag.pipeline import rag_chain
+
+
+def request_chatbot(query):
+    user_record = {
+        "sender": "user",
+        "message": query,
+        "timestamp": datetime.now().isoformat(),
+    }
+    answer = rag_chain.invoke(query)
+    chatbot_record = {
+        "sender": "chatbot",
+        "message": answer,
+        "timestamp": datetime.now().isoformat(),
+    }
+    return {"user": user_record, "chatbot": chatbot_record}
+
 
 if __name__ == "__main__":
-  testing()
+    print("Ask a question (empty or 'exit' to quit):")
+    while True:
+        input_query = input("you: ").strip()
+        if not input_query or input_query.lower() in {"exit", "quit"}:
+            break
+        result = request_chatbot(input_query)
+        print(f"chatbot: {result['chatbot']['message']}")
+        print(f"record: {result}")
