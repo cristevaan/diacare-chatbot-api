@@ -14,6 +14,7 @@ LLM_MODEL = ChatGroq(model="openai/gpt-oss-20b", temperature=0.2)
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 50
 RETRIEVE_K = 6
+CHROMA_DIR = "./.chroma"
 
 PROMPT_TEMPLATE = ChatPromptTemplate.from_messages([
     ("system", """Kamu adalah asisten kesehatan yang menjawab pertanyaan seputar diabetes melitus tipe 2 dewasa, berdasarkan pedoman kesehatan Indonesia (PNPK/Kemenkes).

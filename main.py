@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from rag.pipeline import rag_chain
+from rag.service import answer
 
 
 def request_chatbot(query):
@@ -9,10 +9,10 @@ def request_chatbot(query):
         "message": query,
         "timestamp": datetime.now().isoformat(),
     }
-    answer = rag_chain.invoke(query)
+    answer_text = answer(query)
     chatbot_record = {
         "sender": "chatbot",
-        "message": answer,
+        "message": answer_text,
         "timestamp": datetime.now().isoformat(),
     }
     return {"user": user_record, "chatbot": chatbot_record}

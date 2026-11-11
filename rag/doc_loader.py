@@ -22,12 +22,18 @@ def save_docs_to_file(docs, out_path="./docs/loaded/loaded_docs.txt"):
     print(f"Saved {len(docs)} documents to {out_path}")
 
 
-print("Loading PDF documents...")
-docs1 = load_pdf_PyPDFLoader("./docs/Pedoman_Nasional_Pelayanan_Kedokteran_(PNPK)_Tata_Laksana_Diabetes_Melitus_Tipe_2_Dewasa.pdf")
-docs2 = load_pdf_PyPDFLoader("./docs/Pedoman_Nasional_Pelayanan_Klinis_(PNPK)_Tatalaksana_Diabetes_Melitus_Tipe_2_Dewasa.pdf")
-docs3 = load_pdf_PyPDFLoader("./docs/Pedoman-Pengelolaan-dan-Pencegahan-DMT2-Ebook.pdf")
+PDF_PATHS = (
+    "./docs/Pedoman_Nasional_Pelayanan_Kedokteran_(PNPK)_Tata_Laksana_Diabetes_Melitus_Tipe_2_Dewasa.pdf",
+    "./docs/Pedoman_Nasional_Pelayanan_Klinis_(PNPK)_Tatalaksana_Diabetes_Melitus_Tipe_2_Dewasa.pdf",
+    "./docs/Pedoman-Pengelolaan-dan-Pencegahan-DMT2-Ebook.pdf",
+)
 
-docs = docs1 + docs2 + docs3
 
-print(f"Loaded {len(docs)} documents from PDF files.")
-save_docs_to_file(docs)
+def load_all_docs():
+    print("Loading PDF documents...")
+    docs = []
+    for path in PDF_PATHS:
+        docs.extend(load_pdf_PyPDFLoader(path))
+    print(f"Loaded {len(docs)} documents from PDF files.")
+    save_docs_to_file(docs)
+    return docs

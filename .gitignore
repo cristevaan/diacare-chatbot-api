@@ -224,3 +224,6 @@ __marimo__/
 
 # Loaded documents
 docs/loaded/
+
+# Chroma vector store
+.chroma/
