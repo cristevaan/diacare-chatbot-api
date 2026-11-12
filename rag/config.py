@@ -9,7 +9,14 @@ load_dotenv()
 EMBEDDING_MODEL = HuggingFaceEmbeddings(
     model_name="sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
 )
-LLM_MODEL = ChatGroq(model="openai/gpt-oss-20b", temperature=0.2)
+_LLM = None
+
+
+def get_llm():
+    global _LLM
+    if _LLM is None:
+        _LLM = ChatGroq(model="openai/gpt-oss-20b", temperature=0.2)
+    return _LLM
 
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 50

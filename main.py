@@ -1,29 +1,35 @@
-from datetime import datetime
+import logging
+from contextlib import asynccontextmanager
 
-from rag.service import answer
+from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 
+from api.routes import router
+from rag.pipeline import get_vectorstore
 
-def request_chatbot(query):
-    user_record = {
-        "sender": "user",
-        "message": query,
-        "timestamp": datetime.now().isoformat(),
-    }
-    answer_text = answer(query)
-    chatbot_record = {
-        "sender": "chatbot",
-        "message": answer_text,
-        "timestamp": datetime.now().isoformat(),
-    }
-    return {"user": user_record, "chatbot": chatbot_record}
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+)
+logger = logging.getLogger("diacare")
 
 
-if __name__ == "__main__":
-    print("Ask a question (empty or 'exit' to quit):")
-    while True:
-        input_query = input("you: ").strip()
-        if not input_query or input_query.lower() in {"exit", "quit"}:
-            break
-        result = request_chatbot(input_query)
-        print(f"chatbot: {result['chatbot']['message']}")
-        print(f"record: {result}")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("membuka index RAG...")
+    get_vectorstore()
+    logger.info("index RAG siap")
+    yield
+
+app = FastAPI(
+    title="Diacare Chatbot API",
+    description="Chatbot diabetes melitus tipe 2 berbasis RAG (pedoman PNPK/Kemenkes).",
+    lifespan=lifespan,
+)
+app.include_router(router)
+
+
+@app.exception_handler(Exception)
+async def unhandled_handler(request, exc):
+    logger.exception("unhandled error on %s %s", request.method, request.url.path)
+    return JSONResponse(status_code=500, content={"detail": "Terjadi kesalahan internal."})
