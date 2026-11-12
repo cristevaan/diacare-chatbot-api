@@ -9,5 +9,6 @@ langchain-huggingface
 langchain-text-splitters
 python-dotenv
 pypdf
+sentence-transformers
 pytest
 httpx

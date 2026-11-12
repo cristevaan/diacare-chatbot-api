@@ -1,6 +1,6 @@
 import os
 
-from rag.config import CHROMA_DIR, CHUNK_OVERLAP, CHUNK_SIZE, EMBEDDING_MODEL, LLM_MODEL, PROMPT_TEMPLATE, RETRIEVE_K
+from rag.config import CHROMA_DIR, CHUNK_OVERLAP, CHUNK_SIZE, EMBEDDING_MODEL, PROMPT_TEMPLATE, RETRIEVE_K, get_llm
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 from langchain_chroma import Chroma
@@ -49,7 +49,7 @@ def get_rag_chain():
         _rag_chain = (
             {"context": get_retriever() | format_docs, "question": RunnablePassthrough()}
             | PROMPT_TEMPLATE
-            | LLM_MODEL
+            | get_llm()
             | StrOutputParser()
         )
     return _rag_chain

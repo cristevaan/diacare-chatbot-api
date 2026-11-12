@@ -60,3 +60,29 @@ def test_answer_retries_once(monkeypatch):
     monkeypatch.setattr("rag.service.get_rag_chain", lambda: chain)
     assert answer("Apa itu diabetes?") == "jawaban"
     assert chain.calls == 2
+
+
+def test_import_config_without_api_key(tmp_path):
+    import os
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    repo_root = Path(__file__).resolve().parents[1]
+    script = (
+        "import os\n"
+        "os.environ.pop('GROQ_API_KEY', None)\n"
+        "import dotenv\n"
+        "dotenv.load_dotenv = lambda *a, **k: None\n"
+        "import rag.config\n"
+    )
+    env = {k: v for k, v in os.environ.items() if k != "GROQ_API_KEY"}
+    env["PYTHONPATH"] = str(repo_root)
+    result = subprocess.run(
+        [sys.executable, "-c", script],
+        cwd=tmp_path,
+        env=env,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, result.stderr
