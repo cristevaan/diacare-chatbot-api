@@ -1,0 +1,10 @@
+.git
+.github
+.env
+.chroma/
+__pycache__/
+*.pyc
+.pytest_cache/
+.commandcode/
+docs/loaded/
+tests/

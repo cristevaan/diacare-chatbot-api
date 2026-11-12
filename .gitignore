@@ -218,3 +218,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# AI Agent
+.commandcode/
+
+# Loaded documents
+docs/loaded/
+
+# Chroma vector store
+.chroma/
