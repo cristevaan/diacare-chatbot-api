@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
 from main import app
-from rag.service import request_chatbot
+from rag.service import RAGUnavailableError, UpstreamError, request_chatbot
 
 client = TestClient(app)
 
@@ -37,3 +37,32 @@ def test_request_chatbot_record(monkeypatch):
     assert result["user"]["sender"] == "user"
     assert result["chatbot"]["message"] == "jawaban dummy"
     assert result["user"]["timestamp"] and result["chatbot"]["timestamp"]
+
+
+def test_chat_upstream_error(monkeypatch):
+    def raise_upstream(question):
+        raise UpstreamError("jawaban kosong dari model")
+
+    monkeypatch.setattr("api.routes.request_chatbot", raise_upstream)
+    response = client.post("/chat", json={"question": "Apa itu diabetes?"})
+    assert response.status_code == 502
+
+
+def test_chat_index_unavailable(monkeypatch):
+    def raise_unavailable(question):
+        raise RAGUnavailableError("gagal menyiapkan chain")
+
+    monkeypatch.setattr("api.routes.request_chatbot", raise_unavailable)
+    response = client.post("/chat", json={"question": "Apa itu diabetes?"})
+    assert response.status_code == 503
+
+
+def test_chat_unhandled_error(monkeypatch):
+    def raise_runtime(question):
+        raise RuntimeError("kesalahan tak terduga")
+
+    monkeypatch.setattr("api.routes.request_chatbot", raise_runtime)
+    client_no_raise = TestClient(app, raise_server_exceptions=False)
+    response = client_no_raise.post("/chat", json={"question": "Apa itu diabetes?"})
+    assert response.status_code == 500
+    assert response.json() == {"detail": "Terjadi kesalahan internal."}
